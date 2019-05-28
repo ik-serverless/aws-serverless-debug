@@ -5,6 +5,7 @@ import boto3
 import base64
 import socket
 from urllib import request
+from pathlib import Path
 
 from botocore.exceptions import ClientError
 
@@ -16,10 +17,11 @@ secclient = boto3.client('secretsmanager')
 def lambda_handler(event, context):
     print("Lambda Debug Network")
     # resolver configuration file
-    read_file('/etc/resolv.conf')
+    read_file('files.cfg')
     secrets_manager_get(secretsname)
     hosts('hosts.cfg')
     url_resolves('request.cfg')
+    # dns_show_entries()
     return {
         'statusCode': 200,
         'body': json.dumps('Hello from Lambda!')
@@ -31,7 +33,13 @@ def read_file(filepath):
     print("\n\tReading file: {}\n".format(filepath))
     with open(filepath) as fp:
         for cnt, line in enumerate(fp):
-            print("\t{}".format(line))
+            fileline = line.strip()
+            print("\n\t\tReading file: '{}'\n".format(fileline))
+            my_file=Path(line.strip())
+            if my_file.exists():
+                with open(fileline) as ff:
+                    for cnti, linei in enumerate(ff):
+                        print("\t\t{}".format(linei))
     print("\n")
 
 
@@ -82,3 +90,11 @@ def url_request(url):
         print("Url {} not accessible. Error {}\n".format(url, e))
 
 # TODO: instrument boto3 to use particular library
+
+
+def dns_show_entries():
+    import dns.resolver
+    my_resolver = dns.resolver.Resolver()
+    my_resolver.nameservers = ['8.8.8.8']
+    answer = my_resolver.query('google.com')
+    print(answer)
