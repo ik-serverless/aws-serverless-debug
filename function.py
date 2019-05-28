@@ -89,12 +89,10 @@ def url_request(url):
     except Exception as e:
         print("Url {} not accessible. Error {}\n".format(url, e))
 
-# TODO: instrument boto3 to use particular library
-
-
 def dns_show_entries():
     import dns.resolver
     my_resolver = dns.resolver.Resolver()
     my_resolver.nameservers = ['8.8.8.8']
     answer = my_resolver.query('google.com')
-    print(answer)
+    for data in answer:
+        print(data)
