@@ -27,6 +27,14 @@ def lambda_handler(event, context):
         'body': json.dumps('Hello from Lambda!')
     }
 
+def port_is_open(ip, port):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    result = sock.connect_ex(ip,port)
+    if result == 0:
+        print f'port {port} for ip {ip} is open'
+    else:
+        print f'port {port} for ip {ip} is NOT open'
+    sock.close()
 
 def read_file(filepath):
     # Make it generic. If file not found, just error it
